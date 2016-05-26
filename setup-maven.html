@@ -1,0 +1,488 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Setting up a project with Maven &mdash; Armeria 0.31.0.Final documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="stylesheet" href="_static/overrides.css" type="text/css" />
+  
+    <link rel="top" title="Armeria 0.31.0.Final documentation" href="index.html"/>
+        <link rel="up" title="Setting up a project" href="setup.html"/>
+        <link rel="next" title="Writing a server" href="server.html"/>
+        <link rel="prev" title="Setting up a project with Gradle" href="setup-gradle.html"/>
+  <script src="_static/center_page.js"></script>
+   
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html">
+          
+
+          
+            
+            <img src="_static/armeria.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.31
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="setup.html">Setting up a project</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="setup-gradle.html">Setting up a project with Gradle</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Setting up a project with Maven</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#enabling-http-2-over-tls">Enabling HTTP/2 over TLS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#enabling-the-embedded-tomcat">Enabling the embedded Tomcat</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#an-example-pom">An example POM</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="server.html">Writing a server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="client.html">Writing a client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced.html">Advanced topics</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/line/armeria/releases">Release notes</a></li>
+<li class="toctree-l1"><a class="reference external" href="apidocs/index.html#://">API documentation</a></li>
+<li class="toctree-l1"><a class="reference external" href="xref/index.html#://">Source cross-reference</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/line/armeria">Fork me at GitHub</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/line/armeria/blob/master/CONTRIBUTING.md">Contributing</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Armeria</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="setup.html">Setting up a project</a> &raquo;</li>
+        
+      <li>Setting up a project with Maven</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/line/armeria/blob/master/site/src/sphinx/setup-maven.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="setting-up-a-project-with-maven">
+<h1>Setting up a project with Maven<a class="headerlink" href="#setting-up-a-project-with-maven" title="Permalink to this headline">¶</a></h1>
+<p>Armeria is distributed via <a class="reference external" href="http://search.maven.org/">Maven Central Repository</a>. Add the following dependency to your <code class="docutils literal"><span class="pre">pom.xml</span></code>:</p>
+<pre class="literal-block">
+&lt;project&gt;
+  ...
+  &lt;dependencies&gt;
+    ...
+    &lt;dependency&gt;
+      &lt;groupId&gt;com.linecorp.armeria&lt;/groupId&gt;
+      &lt;artifactId&gt;armeria&lt;/artifactId&gt;
+      &lt;version&gt;0.31.0.Final&lt;/version&gt;
+    &lt;/dependency&gt;
+    ...
+  &lt;/dependencies&gt;
+  ...
+&lt;/project&gt;
+</pre>
+<div class="section" id="enabling-http-2-over-tls">
+<h2>Enabling HTTP/2 over TLS<a class="headerlink" href="#enabling-http-2-over-tls" title="Permalink to this headline">¶</a></h2>
+<p>Due to the lack of out-of-the-box ALPN (Application Level Protocol Negotiation) support in Java 8, which is
+mandatory for HTTP/2, you need to modify your <code class="docutils literal"><span class="pre">pom.xml</span></code> more than just adding a dependency. Note that
+you don&#8217;t need this if you are going to use HTTP/2 over a cleartext connection (h2c).</p>
+<pre class="literal-block">
+&lt;project&gt;
+  ...
+  &lt;properties&gt;
+    &lt;jetty.alpnAgent.version&gt;2.0.5&lt;/jetty.alpnAgent.version&gt;
+    &lt;jetty.alpnAgent.path&gt;${settings.localRepository}/org/mortbay/jetty/alpn/jetty-alpn-agent/${jetty.alpnAgent.version}/jetty-alpn-agent-${jetty.alpnAgent.version}.jar&lt;/jetty.alpnAgent.path&gt;
+    &lt;argLine.alpnAgent&gt;-javaagent:&quot;${jetty.alpnAgent.path}&quot;&lt;/argLine.alpnAgent&gt;
+  &lt;/properties&gt;
+  ...
+  &lt;build&gt;
+    &lt;plugins&gt;
+      ...
+      &lt;!-- Download the alpn-boot.jar in advance to add it to the boot classpath. --&gt;
+      &lt;plugin&gt;
+        &lt;artifactId&gt;maven-dependency-plugin&lt;/artifactId&gt;
+        &lt;version&gt;2.10&lt;/version&gt;
+        &lt;executions&gt;
+          &lt;execution&gt;
+            &lt;id&gt;get-jetty-alpn-agent&lt;/id&gt;
+            &lt;phase&gt;validate&lt;/phase&gt;
+            &lt;goals&gt;
+              &lt;goal&gt;get&lt;/goal&gt;
+            &lt;/goals&gt;
+            &lt;configuration&gt;
+              &lt;groupId&gt;org.mortbay.jetty.alpn&lt;/groupId&gt;
+              &lt;artifactId&gt;jetty-alpn-agent&lt;/artifactId&gt;
+              &lt;version&gt;${jetty.alpnAgent.version}&lt;/version&gt;
+            &lt;/configuration&gt;
+          &lt;/execution&gt;
+        &lt;/executions&gt;
+      &lt;/plugin&gt;
+
+      &lt;!-- Add the boot classpath to the VM options when running tests --&gt;
+      &lt;plugin&gt;
+        &lt;artifactId&gt;maven-surefire-plugin&lt;/artifactId&gt;
+        &lt;version&gt;2.19&lt;/version&gt;
+        &lt;configuration&gt;
+          &lt;argLine&gt;${argLine.alpnAgent}&lt;/argLine&gt;
+        &lt;/configuration&gt;
+      &lt;/plugin&gt;
+      ...
+    &lt;/plugins&gt;
+  &lt;/build&gt;
+  ...
+&lt;/project&gt;
+</pre>
+</div>
+<div class="section" id="enabling-the-embedded-tomcat">
+<h2>Enabling the embedded Tomcat<a class="headerlink" href="#enabling-the-embedded-tomcat" title="Permalink to this headline">¶</a></h2>
+<p>If you want to embed Tomcat into Armeria, you&#8217;ll have to add the optional dependencies as well:</p>
+<pre class="literal-block">
+&lt;project&gt;
+  ...
+  &lt;properties&gt;
+    ...
+    &lt;slf4j.version&gt;1.7.21&lt;/slf4j.version&gt;
+    &lt;tomcat.version&gt;8.5.6&lt;/tomcat.version&gt;
+    ...
+  &lt;/properties&gt;
+  ...
+  &lt;dependencies&gt;
+    ...
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.apache.tomcat.embed&lt;/groupId&gt;
+      &lt;artifactId&gt;tomcat-embed-core&lt;/artifactId&gt;
+      &lt;version&gt;${tomcat.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.apache.tomcat.embed&lt;/groupId&gt;
+      &lt;artifactId&gt;tomcat-embed-jasper&lt;/artifactId&gt;
+      &lt;version&gt;${tomcat.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.apache.tomcat.embed&lt;/groupId&gt;
+      &lt;artifactId&gt;tomcat-embed-el&lt;/artifactId&gt;
+      &lt;version&gt;${tomcat.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.slf4j&lt;/groupId&gt;
+      &lt;artifactId&gt;log4j-over-slf4j&lt;/artifactId&gt;
+      &lt;version&gt;${slf4j.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+    ...
+  &lt;/dependencies&gt;
+  ...
+&lt;/project&gt;
+</pre>
+</div>
+<div class="section" id="an-example-pom">
+<h2>An example POM<a class="headerlink" href="#an-example-pom" title="Permalink to this headline">¶</a></h2>
+<p>You might want to use the following  <code class="docutils literal"><span class="pre">pom.xml</span></code> as a template if you are starting a new project:</p>
+<pre class="literal-block">
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;project xmlns=&quot;<a class="reference external" href="http://maven.apache.org/POM/4.0.0">http://maven.apache.org/POM/4.0.0</a>&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;&gt;
+
+  &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+  &lt;groupId&gt;com.example&lt;/groupId&gt;
+  &lt;artifactId&gt;myproject&lt;/artifactId&gt;
+  &lt;version&gt;0.1.0.Final-SNAPSHOT&lt;/version&gt;
+  &lt;packaging&gt;jar&lt;/packaging&gt;
+  &lt;name&gt;My Armeria project&lt;/name&gt;
+
+  &lt;properties&gt;
+    &lt;!-- Project options --&gt;
+    &lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;
+    &lt;project.reporting.outputEncoding&gt;UTF-8&lt;/project.reporting.outputEncoding&gt;
+
+    &lt;!-- Compiler options --&gt;
+    &lt;maven.compiler.compilerVersion&gt;1.8&lt;/maven.compiler.compilerVersion&gt;
+    &lt;maven.compiler.source&gt;1.8&lt;/maven.compiler.source&gt;
+    &lt;maven.compiler.target&gt;1.8&lt;/maven.compiler.target&gt;
+    &lt;maven.compiler.fork&gt;true&lt;/maven.compiler.fork&gt;
+    &lt;maven.compiler.debug&gt;true&lt;/maven.compiler.debug&gt;
+    &lt;maven.compiler.optimize&gt;true&lt;/maven.compiler.optimize&gt;
+    &lt;maven.compiler.showDeprecation&gt;true&lt;/maven.compiler.showDeprecation&gt;
+    &lt;maven.compiler.showWarnings&gt;true&lt;/maven.compiler.showWarnings&gt;
+
+    &lt;!-- Dependency versions --&gt;
+    &lt;armeria.version&gt;0.31.0.Final&lt;/armeria.version&gt;
+    &lt;logback.version&gt;1.1.7&lt;/logback.version&gt;
+    &lt;slf4j.version&gt;1.7.21&lt;/slf4j.version&gt;
+    &lt;tomcat.version&gt;8.5.6&lt;/tomcat.version&gt;
+    &lt;jetty.alpnAgent.version&gt;2.0.5&lt;/jetty.alpnAgent.version&gt;
+    &lt;jetty.alpnAgent.path&gt;${settings.localRepository}/org/mortbay/jetty/alpn/jetty-alpn-agent/${jetty.alpnAgent.version}/jetty-alpn-agent-${jetty.alpnAgent.version}.jar&lt;/jetty.alpnAgent.path&gt;
+    &lt;argLine.alpnAgent&gt;-javaagent:&quot;${jetty.alpnAgent.path}&quot;&lt;/argLine.alpnAgent&gt;
+  &lt;/properties&gt;
+
+  &lt;dependencies&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;com.linecorp.armeria&lt;/groupId&gt;
+      &lt;artifactId&gt;armeria&lt;/artifactId&gt;
+      &lt;version&gt;${armeria.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+
+    &lt;!-- Embedded Tomcat --&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.apache.tomcat.embed&lt;/groupId&gt;
+      &lt;artifactId&gt;tomcat-embed-core&lt;/artifactId&gt;
+      &lt;version&gt;${tomcat.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.apache.tomcat.embed&lt;/groupId&gt;
+      &lt;artifactId&gt;tomcat-embed-jasper&lt;/artifactId&gt;
+      &lt;version&gt;${tomcat.version}&lt;/version&gt;
+      &lt;scope&gt;runtime&lt;/scope&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.apache.tomcat.embed&lt;/groupId&gt;
+      &lt;artifactId&gt;tomcat-embed-el&lt;/artifactId&gt;
+      &lt;version&gt;${tomcat.version}&lt;/version&gt;
+      &lt;scope&gt;runtime&lt;/scope&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.apache.tomcat.embed&lt;/groupId&gt;
+      &lt;artifactId&gt;tomcat-embed-logging-log4j&lt;/artifactId&gt;
+      &lt;version&gt;${tomcat.version}&lt;/version&gt;
+      &lt;scope&gt;runtime&lt;/scope&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.slf4j&lt;/groupId&gt;
+      &lt;artifactId&gt;log4j-over-slf4j&lt;/artifactId&gt;
+      &lt;version&gt;${slf4j.version}&lt;/version&gt;
+      &lt;scope&gt;runtime&lt;/scope&gt;
+    &lt;/dependency&gt;
+
+    &lt;!-- Logback --&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;ch.qos.logback&lt;/groupId&gt;
+      &lt;artifactId&gt;logback-classic&lt;/artifactId&gt;
+      &lt;version&gt;${logback.version}&lt;/version&gt;
+      &lt;scope&gt;runtime&lt;/scope&gt;
+    &lt;/dependency&gt;
+  &lt;/dependencies&gt;
+
+  &lt;build&gt;
+    &lt;plugins&gt;
+      &lt;!-- Download the alpn-boot.jar in advance to add it to the boot classpath. --&gt;
+      &lt;plugin&gt;
+        &lt;artifactId&gt;maven-dependency-plugin&lt;/artifactId&gt;
+        &lt;version&gt;2.10&lt;/version&gt;
+        &lt;executions&gt;
+          &lt;execution&gt;
+            &lt;id&gt;get-jetty-alpn-agent&lt;/id&gt;
+            &lt;phase&gt;validate&lt;/phase&gt;
+            &lt;goals&gt;
+              &lt;goal&gt;get&lt;/goal&gt;
+            &lt;/goals&gt;
+            &lt;configuration&gt;
+              &lt;groupId&gt;org.mortbay.jetty.alpn&lt;/groupId&gt;
+              &lt;artifactId&gt;jetty-alpn-agent&lt;/artifactId&gt;
+              &lt;version&gt;${jetty.alpnAgent.version}&lt;/version&gt;
+            &lt;/configuration&gt;
+          &lt;/execution&gt;
+        &lt;/executions&gt;
+      &lt;/plugin&gt;
+
+      &lt;!-- Add the boot classpath to the VM options when running tests --&gt;
+      &lt;plugin&gt;
+        &lt;artifactId&gt;maven-surefire-plugin&lt;/artifactId&gt;
+        &lt;version&gt;2.19&lt;/version&gt;
+        &lt;configuration&gt;
+          &lt;argLine&gt;${argLine.alpnAgent}&lt;/argLine&gt;
+        &lt;/configuration&gt;
+      &lt;/plugin&gt;
+    &lt;/plugins&gt;
+  &lt;/build&gt;
+&lt;/project&gt;
+</pre>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="server.html" class="btn btn-neutral float-right" title="Writing a server" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="setup-gradle.html" class="btn btn-neutral" title="Setting up a project with Gradle" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015-2016, LINE Corporation.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.31.0.Final',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+  <div class="github-fork-ribbon-wrapper right">
+    <div class="github-fork-ribbon">
+      <a href="https://github.com/line/armeria">Fork me at GitHub</a>
+    </div>
+  </div>
+  <script type="text/javascript" src="_static/add_badges.js"></script>
+   
+
+
+</body>
+</html>
